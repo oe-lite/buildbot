@@ -1,16 +1,16 @@
 # Base docker image
-FROM ubuntu:14.04.2
+FROM ubuntu:14.04
 
 # Docker image for OE-lite.org buildbot master
 MAINTAINER Esben Haabendal <esben@haabendal.dk>
 
 # Install buildbot package dependencies
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -qq update && \
-    apt-get install -qqy \
+RUN apt-get update && \
+    apt-get install -y \
         python-pip python-dev git sudo && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install buildbot itself and pip dependencies
 RUN pip install buildbot-slave
