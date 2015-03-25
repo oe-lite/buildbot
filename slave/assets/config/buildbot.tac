@@ -30,7 +30,7 @@ except ImportError:
 buildmaster_host = 'localhost'
 port = 9989
 slavename = 'example-slave'
-passwd = 'pass'
+passwd = file('passwd').readline().strip()
 keepalive = 600
 usepty = 0
 umask = None
