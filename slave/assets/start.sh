@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd /srv/buildbot/slave
-buildslave start --nodaemon
+sudo -u buildbot buildslave start --nodaemon

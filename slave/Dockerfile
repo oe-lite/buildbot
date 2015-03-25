@@ -1,10 +1,10 @@
 # Base docker image
-FROM ubuntu:14.04
+FROM jpetazzo/dind
 
-# Docker image for OE-lite.org buildbot master
+# Docker image for OE-lite.org buildbot slave
 MAINTAINER Esben Haabendal <esben@haabendal.dk>
 
-# Install buildbot package dependencies
+# Install buildbot and docker package dependencies
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
@@ -20,11 +20,11 @@ COPY assets /srv/setup/
 
 # Setup buildbot user
 RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
+    usermod -aG docker buildbot && \
     chown -R buildbot:buildbot /srv/setup
-USER buildbot
 WORKDIR /srv/buildbot
 
 # Create and configure buildbot master
-RUN /srv/setup/setup.sh
+RUN sudo -u buildbot /srv/setup/setup.sh
 
-CMD ./start.sh
+CMD wrapdocker ./start.sh

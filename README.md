@@ -23,3 +23,18 @@ To check the status (log output) of the buildbot master:
 ```sh
 docker logs buildbot
 ```
+
+## Buildbot Slaves
+
+To build the buildbot slave docker image, run the following command in the
+slave directory:
+
+```sh
+docker build -t buildbot-slave .
+```
+
+To start a buildbot slave docker container:
+
+```sh
+docker --privileged -d --name=buildbot-slave buildbot-slave
+```
