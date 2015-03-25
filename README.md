@@ -36,5 +36,5 @@ docker build -t buildbot-slave .
 To start a buildbot slave docker container:
 
 ```sh
-docker --privileged -d --name=buildbot-slave buildbot-slave
+docker run --privileged -d --name=buildbot-slave buildbot-slave
 ```
