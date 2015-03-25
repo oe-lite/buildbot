@@ -12,7 +12,7 @@ docker build -t buildbot-master .
 To start a buildbot master docker container:
 
 ```sh
-docker run -p 8010:8010 -d --name=buildbot buildbot-master
+docker run -p 8010:8010 -p 9989:9989 -d --name=buildbot-master buildbot-master
 ```
 
 It will expose the buildbot service on host port 8010.  Test it on

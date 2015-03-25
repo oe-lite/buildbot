@@ -30,6 +30,3 @@ m.setServiceParent(application)
 m.log_rotation.rotateLength = rotateLength
 m.log_rotation.maxRotatedFiles = maxRotatedFiles
 
-import sys
-from twisted.python import log
-log.FileLogObserver(sys.stdout).start()

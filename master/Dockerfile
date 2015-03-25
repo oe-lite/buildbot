@@ -13,7 +13,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install buildbot itself and pip dependencies
-RUN pip install sqlalchemy==0.7.10 buildbot
+RUN pip install buildbot sqlalchemy==0.7.10
 
 # Install setup and start scripts and buildbot configuration
 COPY assets /srv/setup/
