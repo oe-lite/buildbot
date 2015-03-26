@@ -24,7 +24,7 @@ RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
     chown -R buildbot:buildbot /srv/setup
 WORKDIR /srv/buildbot
 
-# Create and configure buildbot master
-RUN sudo -u buildbot /srv/setup/setup.sh
+# Setup whatever is possible to do at image build time (not much...)
+RUN /srv/setup/setup.sh
 
-CMD wrapdocker ./start.sh
+CMD ["wrapdocker", "./start.sh"]

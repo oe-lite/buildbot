@@ -1,15 +1,37 @@
 #!/bin/bash -ex
 
-cd /srv/buildbot
-ln -s /srv/setup/start.sh
-mkdir -p slave
-cp /srv/setup/config/* slave/
-buildslave create-slave slave 172.17.42.1:9989 example-slave pass
-if [ -e slave/buildbot.tac.new ] ; then
-  mv slave/buildbot.tac.new slave/buildbot.tac
-fi
-cat >> slave/buildbot.tac <<EOF
+# Apply default values
+MASTER="${MASTER:-buildbot.oe-lite.org:9989}"
+SLAVE_NAME="${SLAVE_NAME:-example-slave}"
+SLAVE_PASSWD="${SLAVE_PASSWD:-pass}"
+
+# This script is run as root on image build, and as buildbot user on container
+# start.
+
+if [ $UID -eq 0 ] ; then
+    # This script is run as root on image build.
+
+    cd /srv/buildbot
+    sudo -u buildbot ln -s /srv/setup/start.sh
+
+else
+    # This script is run as buildbot user on container start.
+
+    if [ ! -e /srv/buildbot/slave/buildbot.tac ] ; then
+	cd /srv/buildbot
+	buildslave create-slave slave \
+	    "${MASTER}" "${SLAVE_NAME}" "${SLAVE_PASSWD}"
+	cat >> slave/buildbot.tac <<EOF
 import sys
 from twisted.python import log
 log.FileLogObserver(sys.stdout).start()
 EOF
+	if [ -n "${SLAVE_ADMIN}" ] ; then
+	    echo "${SLAVE_ADMIN}" > slave/info/admin
+	fi
+	if [ -n "${SLAVE_DESCRIPTION}" ] ; then
+	    echo "${SLAVE_DESCRIPTION}" > slave/info/host
+	fi
+    fi
+
+fi

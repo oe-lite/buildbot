@@ -33,8 +33,34 @@ slave directory:
 docker build -t buildbot-slave .
 ```
 
+To use latest buildbot-slave image, you can don't have to build it, just use
+the oelite/buildbot-slave image on Docker Hub instead of the local
+buildbot-slave image shown in the instructions below.
+
 To start a buildbot slave docker container:
 
 ```sh
-docker run --privileged -d --name=buildbot-slave buildbot-slave
+docker run --privileged -d \
+       -e SLAVE_NAME=myslavename \
+       -e SLAVE_PASSWD=mysecret \
+       -e SLAVE_ADMIN="My Name <me@gmail.com>" \
+       -e SLAVE_DESCRIPTION="My build slave" \
+       --name=buildbot-slave buildbot-slave
+```
+
+You should of-course provide proper values for the SLAVE_NAME, SLAVE_PASSWD,
+SLAVE_ADMIN and SLAVE_DESCRIPTION variables.
+
+If you need to give some arguments to docker, you can specify them in
+DOCKER_DAEMON_ARGS.  If you for example want to use the overlayfs storage
+driver:
+
+```sh
+docker run --privileged -d \
+       -e SLAVE_NAME=myslavename \
+       -e SLAVE_PASSWD=mysecret \
+       -e SLAVE_ADMIN="My Name <me@gmail.com>" \
+       -e SLAVE_DESCRIPTION="My build slave" \
+       -e DOCKER_DAEMON_ARGS="-s overlay" \
+       --name=buildbot-slave buildbot-slave
 ```
