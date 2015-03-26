@@ -5,7 +5,8 @@ FROM ubuntu:14.04
 MAINTAINER Esben Haabendal <esben@haabendal.dk>
 
 # Setup buildbot user
-RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot
+RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
+    install -o buildbot -g buildbot -d /srv/buildbot/master
 USER buildbot
 
 VOLUME /srv/buildbot/master
