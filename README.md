@@ -1,5 +1,6 @@
 # OE-lite.org Buildbot CI
 
+
 ## Buildbot Master
 
 To build build the buildbot master docker image, run the following command in
@@ -9,10 +10,16 @@ the master directory:
 docker build -t buildbot-master .
 ```
 
+To use latest buildbot-master image, you can don't have to build it, just use
+the oelite/buildbot-master image on Docker Hub instead of the local
+buildbot-master image shown in the instructions below.
+
 To start a buildbot master docker container:
 
 ```sh
-docker run -p 8010:8010 -p 9989:9989 -d --name=buildbot-master buildbot-master
+docker run -d --name=buildbot-master \
+       -p 8010:8010 -p 9989:9989 \
+       buildbot-master
 ```
 
 It will expose the buildbot service on host port 8010.  Test it on
@@ -21,8 +28,38 @@ http://localhost:8010/
 To check the status (log output) of the buildbot master:
 
 ```sh
-docker logs buildbot
+docker logs buildbot-master
 ```
+
+To enable persistent state/data of the buildbot master, you should mount a
+volume at /srv/buildbot/master.  You can either mount a host directory or use
+a data container for the purpose.
+
+If you want to use a host directory, you need to make it owned by UID=999 and
+GID=999.  To start master with /var/lib/buildbot mounted, use something like:
+
+```sh
+docker run -d --name=buildbot-master \
+       -p 8010:8010 -p 9989:9989 \
+       -v /var/lib/buildbot:/srv/buildbot/master \
+       buildbot-master
+```
+
+To use a data container instead, you first need to create a data container:
+
+```sh
+docker create --name=buildbot-data oelite/buildbot-data
+```
+
+And then use that when starting the master:
+
+```sh
+docker run -d --name=buildbot-master \
+       -p 8010:8010 -p 9989:9989 \
+       --volumes-from=buildbot-data \
+       buildbot-master
+```
+
 
 ## Buildbot Slaves
 

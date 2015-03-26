@@ -20,14 +20,20 @@ COPY assets /srv/setup/
 
 # Setup buildbot user
 RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
-    chown -R buildbot:buildbot /srv/setup
+    chown -R buildbot:buildbot /srv/setup && \
+    install -o buildbot -g buildbot -d /srv/buildbot/master
 USER buildbot
 WORKDIR /srv/buildbot
 
-# Create and configure buildbot master
+# Buildbot master dir in volume.  Either mount it from a data volume
+# container, from host directory, or just let it stay in the buildbot-master
+# container.
+VOLUME /srv/buildbot/master
+
+# Setup whatever is possible to do at image build time (not much...)
 RUN /srv/setup/setup.sh
 
-CMD ./start.sh
+CMD ["./start.sh"]
 
 # Exposed ports
 EXPOSE 8010 9989
