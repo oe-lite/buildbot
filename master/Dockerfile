@@ -8,12 +8,17 @@ MAINTAINER Esben Haabendal <esben@haabendal.dk>
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
-        python-pip python-dev git sudo && \
+	python-pip python-dev git sudo \
+	libffi-dev libssl-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install buildbot itself and pip dependencies
-RUN pip install buildbot sqlalchemy==0.7.10
+# Install buildbot and required dependencies
+RUN git clone http://github.com/esben/buildbot -b github-pr && \
+    cd buildbot/master && ./setup.py install
+
+# Install optional buildbot dependencies
+RUN pip install txgithub service_identity
 
 # Install setup and start scripts and buildbot configuration
 COPY assets /srv/setup/
