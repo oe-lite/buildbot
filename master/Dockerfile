@@ -14,7 +14,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install buildbot and required dependencies
-RUN git clone http://github.com/esben/buildbot -b github-pr && \
+RUN git clone http://github.com/buildbot/buildbot -b eight && \
     cd buildbot/master && ./setup.py install
 
 # Install optional buildbot dependencies
