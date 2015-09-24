@@ -19,7 +19,7 @@ RUN pip install buildbot-slave
 COPY assets /srv/setup/
 
 # Setup buildbot user
-RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
+RUN useradd -m -d /srv/buildbot -s /bin/bash buildbot && \
     usermod -aG docker buildbot && \
     chown -R buildbot:buildbot /srv/setup
 WORKDIR /srv/buildbot
