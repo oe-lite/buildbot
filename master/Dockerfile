@@ -1,7 +1,5 @@
-# Base docker image
-FROM ubuntu:14.04
-
 # Docker image for OE-lite.org buildbot master
+FROM ubuntu:14.04
 MAINTAINER Esben Haabendal <esben@haabendal.dk>
 
 # Install buildbot package dependencies
@@ -24,9 +22,10 @@ RUN pip install txgithub service_identity
 COPY assets /srv/setup/
 
 # Setup buildbot user
-RUN useradd -r -m -d /srv/buildbot -s /bin/bash buildbot && \
-    chown -R buildbot:buildbot /srv/setup && \
-    install -o buildbot -g buildbot -d /srv/buildbot/master
+RUN groupadd -g 666 -r buildbot \
+ && useradd -u 666 -g buildbot -r -m -d /srv/buildbot -s /bin/bash buildbot \
+ && chown -R buildbot:buildbot /srv/setup \
+ && install -o buildbot -g buildbot -d /srv/buildbot/master
 USER buildbot
 WORKDIR /srv/buildbot
 

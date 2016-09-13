@@ -1,16 +1,17 @@
-# Base docker image
-FROM jpetazzo/dind
-
 # Docker image for OE-lite.org buildbot slave
+FROM docker:1.12
 MAINTAINER Esben Haabendal <esben@haabendal.dk>
 
-# Install buildbot and docker package dependencies
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && \
-    apt-get install -y \
-        python-pip python-dev git sudo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install various needed packages
+RUN apk add --no-cache --progress \
+    python python-dev build-base \
+    libffi-dev openssl-dev \
+    git sudo \
+ && rm -rf /var/cache/apk/*
+
+# Install Python pip
+RUN wget "https://bootstrap.pypa.io/get-pip.py" -O /dev/stdout | python \
+ && pip install --upgrade pip
 
 # Install buildbot itself and pip dependencies
 RUN pip install buildbot-slave
@@ -19,61 +20,15 @@ RUN pip install buildbot-slave
 COPY assets /srv/setup/
 
 # Setup buildbot user
-RUN useradd -m -d /srv/buildbot -s /bin/bash buildbot && \
-    usermod -aG docker buildbot && \
-    chown -R buildbot:buildbot /srv/setup
+#RUN addgroup -S -g 667 buildbot \
+# && adduser -S -D -u 667 -G buildbot -h /srv/buildbot -s /bin/bash buildbot \
+# && chown -R buildbot:buildbot /srv/setup
+RUN adduser -D -h /srv/buildbot -s /bin/bash buildbot \
+ && chown -R buildbot:buildbot /srv/setup
+
 WORKDIR /srv/buildbot
 
 # Setup whatever is possible to do at image build time (not much...)
 RUN /srv/setup/setup.sh
 
-CMD ["wrapdocker", "./start.sh"]
-
-RUN apt-get update && \
-    apt-get install -y \
-    	python-support \
-    	python-magic \
-    	python-pycurl \
-    	python-pkg-resources \
-    	python-dev \
-    	coreutils \
-    	sed \
-    	git-core \
-    	cvs \
-    	subversion \
-    	mercurial \
-    	quilt \
-    	gawk \
-    	texinfo \
-    	automake \
-    	autoconf \
-    	autopoint \
-    	libtool \
-    	curl \
-    	texi2html \
-    	diffstat \
-    	openjade \
-    	groff \
-    	mtd-utils \
-    	build-essential \
-    	make \
-    	gcc \
-    	g++ \
-    	binutils \
-    	bison \
-    	flex \
-    	bc \
-    	ncurses-dev \
-    	unzip \
-    	lzma \
-    	gtk-doc-tools \
-    	docbook-utils \
-    	libxml2-utils \
-    	xmlto \
-    	help2man \
-    	libglib2.0-dev \
-    	lzop \
-    	gperf \
-    	python-svn && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+CMD ["./start.sh"]

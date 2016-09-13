@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/sh -ex
 
 # Apply default values
 MASTER="${MASTER:-buildbot.oe-lite.org:9989}"
@@ -8,7 +8,7 @@ SLAVE_PASSWD="${SLAVE_PASSWD:-pass}"
 # This script is run as root on image build, and as buildbot user on container
 # start.
 
-if [ $UID -eq 0 ] ; then
+if [ $(whoami) = root ] ; then
     # This script is run as root on image build.
 
     cd /srv/buildbot

@@ -1,0 +1,73 @@
+version: '2'
+
+services:
+
+  master:
+    container_name: buildbot-master
+    restart: always
+    image: oelite/buildbot-master
+    build:
+      context: ./master
+    ports:
+    - "8010:8010"
+    - "9989:9989"
+    volumes:
+    - /srv/buildbot/data/master:/srv/buildbot/master
+
+  docker:
+    container_name: buildbot-dind
+    restart: always
+    image: docker:1.12-dind
+    privileged: true
+    volumes:
+    - /srv/buildbot/data/slave:/srv/buildbot/slave
+    # Requires kernel 3.18+ and overlay used by host docker
+    #command: [--storage-driver=overlay]
+    # Requires kernel 4.0+ and overlay2 used by host docker
+    #command: [--storage-driver=overlay2]
+
+  slave:
+    container_name: buildbot-slave
+    restart: always
+    image: oelite/buildbot-slave
+    build:
+      context: ./slave
+    volumes:
+    - /srv/buildbot/data/slave:/srv/buildbot/slave
+    links:
+    - master
+    - docker
+    privileged: true
+    environment:
+      MASTER: master:9989
+      DOCKER_HOST: docker:2375
+      SLAVE_NAME: srv1
+      SLAVE_PASSWD: 6Btn8wb}Y
+      SLAVE_ADMIN: Esben Haabendal <esben@haabendal.dk>
+      SLAVE_DESCRIPTION: oe-lite.org build slave
+
+  trigger1:
+    container_name: buildbot-trigger1
+    restart: always
+    image: oelite/buildbot-slave
+    links:
+    - master
+    environment:
+      MASTER: master:9989
+      SLAVE_NAME: srv1trigger1
+      SLAVE_PASSWD: 6Btn8wb}Y
+      SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
+      SLAVE_DESCRIPTION: oe-lite.org trigger slave
+
+  trigger2:
+    container_name: buildbot-trigger2
+    restart: always
+    image: oelite/buildbot-slave
+    links:
+    - master
+    environment:
+      MASTER: master:9989
+      SLAVE_NAME: srv1trigger2
+      SLAVE_PASSWD: 6Btn8wb}Y
+      SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
+      SLAVE_DESCRIPTION: oe-lite.org trigger slave
