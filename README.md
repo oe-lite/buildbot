@@ -74,30 +74,35 @@ To use latest buildbot-slave image, you can don't have to build it, just use
 the oelite/buildbot-slave image on Docker Hub instead of the local
 buildbot-slave image shown in the instructions below.
 
-To start a buildbot slave docker container:
+The oe-lite slave uses docker-in-docker (DIND), so a dedicated docker container is needed:
+
+```sh
+# determine the storage driver used by the host (devicemapper, aufs, overlay, overlay2)
+storage_driver=$(docker info 2>/dev/null | grep -oP 'Storage Driver: \K\w+')
+docker run --privileged -d \
+        --name oelite-docker \
+        --volume /srv/buildbot/oelite-slave:/srv/buildbot/slave \
+        docker:1.12-dind --storage-driver=$storage_driver
+```
+
+Then start the oe-lite buildslave and link it to the docker container
 
 ```sh
 docker run --privileged -d \
-       -e SLAVE_NAME=myslavename \
-       -e SLAVE_PASSWD=mysecret \
-       -e SLAVE_ADMIN="My Name <me@gmail.com>" \
-       -e SLAVE_DESCRIPTION="My build slave" \
-       --name=buildbot-slave buildbot-slave
+        -e SLAVE_NAME=myslavename \
+        -e SLAVE_PASSWD='mysecret' \
+        -e SLAVE_ADMIN="My Name <me@gmail.com>" \
+        -e SLAVE_DESCRIPTION="My build slave" \
+        -e DOCKER_HOST='docker:2375' \
+        --volume /srv/buildbot/oelite-slave:/srv/buildbot/slave \
+        --link oelite-docker:docker \
+        --name=oelite-slave \
+        oelite/buildbot-slave
 ```
 
 You should of-course provide proper values for the SLAVE_NAME, SLAVE_PASSWD,
 SLAVE_ADMIN and SLAVE_DESCRIPTION variables.
 
-If you need to give some arguments to docker, you can specify them in
-DOCKER_DAEMON_ARGS.  If you for example want to use the overlayfs storage
-driver:
-
-```sh
-docker run --privileged -d \
-       -e SLAVE_NAME=myslavename \
-       -e SLAVE_PASSWD=mysecret \
-       -e SLAVE_ADMIN="My Name <me@gmail.com>" \
-       -e SLAVE_DESCRIPTION="My build slave" \
-       -e DOCKER_DAEMON_ARGS="-s overlay" \
-       --name=buildbot-slave buildbot-slave
-```
+The volume mapped to /srv/buildbot/slave in the containers must be configured
+for both the docker-container and the slave-container, or the build fails due
+to the nested docker seeing an empty build folder.
