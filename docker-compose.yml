@@ -57,7 +57,7 @@ services:
       SLAVE_NAME: srv1trigger1
       SLAVE_PASSWD: 6Btn8wb}Y
       SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
-      SLAVE_DESCRIPTION: oe-lite.org trigger slave
+      SLAVE_DESCRIPTION: oe-lite.org trigger1 slave
 
   trigger2:
     container_name: buildbot-trigger2
@@ -70,4 +70,30 @@ services:
       SLAVE_NAME: srv1trigger2
       SLAVE_PASSWD: 6Btn8wb}Y
       SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
-      SLAVE_DESCRIPTION: oe-lite.org trigger slave
+      SLAVE_DESCRIPTION: oe-lite.org trigger2 slave
+
+  trigger3:
+    container_name: buildbot-trigger3
+    restart: always
+    image: oelite/buildbot-slave
+    links:
+    - master
+    environment:
+      MASTER: master:9989
+      SLAVE_NAME: srv1trigger3
+      SLAVE_PASSWD: 6Btn8wb}Y
+      SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
+      SLAVE_DESCRIPTION: oe-lite.org trigger3 slave
+
+  trigger4:
+    container_name: buildbot-trigger4
+    restart: always
+    image: oelite/buildbot-slave
+    links:
+    - master
+    environment:
+      MASTER: master:9989
+      SLAVE_NAME: srv1trigger4
+      SLAVE_PASSWD: 6Btn8wb}Y
+      SLAVE_ADMIN: Kim Højgaard-Hansen <kim.hansen@prevas.dk>
+      SLAVE_DESCRIPTION: oe-lite.org trigger4 slave
